@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Robot Dự Đoán Sunwin (Proxy)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0; padding: 0; height: 100%;
+      background: #0d111c; font-family: Arial, sans-serif;
+    }
+    iframe {
+      width: 100vw; height: 100vh; border: none;
+    }
+    #robotBox {
+      position: fixed; left: 50%; top: 85%;
+      transform: translate(-50%, -50%); z-index: 9999;
+    }
+    #robotBoxInner {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px; border-radius: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.15);
+      max-width: 90vw; overflow: hidden;
+      white-space: nowrap; position: relative;
+    }
+    #robotIcon {
+      width: 44px; height: 44px;
+      animation: float 3s infinite ease-in-out;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    #info {
+      color: #fff; font-size: 14px;
+      max-width: calc(100vw - 150px); line-height: 1.3;
+    }
+    #info strong { color: #00ffff; }
+    #rotateBtn {
+      position: absolute; top: 4px; right: 4px;
+      background: #00c6ff; border: none; border-radius: 50%;
+      width: 22px; height: 22px; color: white; font-size: 14px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<iframe src="https://web.sun.win/"></iframe>
+
+<div id="robotBox">
+  <div id="robotBoxInner">
+    <img id="robotIcon" src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="Robot">
+    <div id="info">
+      <div id="phien">Đang tải...</div>
+      <div id="tinCay">...</div>
+    </div>
+    <button id="rotateBtn" onclick="rotateBox()">↻</button>
+  </div>
+</div>
+
+<script>
+  const API_URL = 'https://corsproxy.io/?https://wanglinapiws.up.railway.app/api/taixiu';
+  let lastRound = null;
+
+  function fetchTX() {
+    fetch(API_URL)
+      .then(res => res.json())
+      .then(data => {
+        const round = data.Phien;
+        const ketQua = data.Ket_qua;
+        const tong = data.Tong;
+        const xx1 = data.Xuc_xac_1;
+        const xx2 = data.Xuc_xac_2;
+        const xx3 = data.Xuc_xac_3;
+
+        if (round !== lastRound) {
+          lastRound = round;
+          document.getElementById('phien').innerHTML = `Phiên: <strong>${round}</strong> (${xx1}, ${xx2}, ${xx3} → <strong>${tong}</strong>)`;
+          document.getElementById('tinCay').innerHTML = `Dự đoán: <strong>${ketQua.toUpperCase()}</strong>`;
+        }
+      })
+      .catch(err => {
+        console.error('Lỗi API:', err);
+        document.getElementById('tinCay').innerHTML = `<span style="color: yellow;">Lỗi kết nối API</span>`;
+      });
+  }
+
+  function rotateBox() {
+    const box = document.getElementById('robotBox');
+    box.style.top = '15%';
+  }
+
+  setInterval(fetchTX, 5000);
+  fetchTX();
+</script>
+
+</body>
+</html>
